@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-
 import config.DBconnector;
 
 public class Appointment {
@@ -179,6 +178,72 @@ public String ReadAppointments() {
 		return "Error occured during retrieving data";
 	}
 }
+
+public String UpdateAppointment(Date day,String time,int AppID) {
+	
+	try(Connection con  = DBconnector.getConnection()){
+		
+		//get doctor id and hospital id for given appointment id
+		String getdocIDQuery = "SELECT doctor_doc_id,hospital_hosp_id  FROM appoinment WHERE appoinment_id = ?";
+		
+		
+		PreparedStatement preparedstatement = con.prepareStatement(getdocIDQuery);
+	
+		preparedstatement.setInt(1,AppID);
+		
+	
+		ResultSet newresultset = preparedstatement.executeQuery();
+		
+		
+		newresultset.next();
+		
+		//Assign into variable 
+		int docid = newresultset.getInt("doctor_doc_id");
+		int hosID = newresultset.getInt("hospital_hosp_id");
+		
+		//get Count of given info
+		String checkQuery="select count(appoinment_id)  from appoinment where date = ? and time = ? and doctor_doc_id = ? and hospital_hosp_id = ?";
+		PreparedStatement prstmnt = con.prepareStatement(checkQuery);
+		
+		prstmnt.setDate(1,day);
+		prstmnt.setString(2,time);
+		prstmnt.setInt(3,docid);
+		prstmnt.setInt(4,hosID);
+		
+		ResultSet newresultset2 = prstmnt.executeQuery();
+		
+		newresultset2.next();
+		
+		//convert count into integer
+		int value = Integer.parseInt(newresultset2.getObject(1).toString());
+		
+		
+		if(value !=0)
+		{
+			return "The particular time slot has been reserved please choose another a time slot.";
+			
+		}
+		
+		else {
+		
+		
+		String updateAppQuery =  "UPDATE appoinment SET date=?,time=? WHERE appoinment_id=?"; 
+
+		PreparedStatement pstmnt = con.prepareStatement(updateAppQuery);
+		pstmnt.setDate(1, day);
+		pstmnt.setString(2, time);
+		pstmnt.setInt(3, AppID);
+		
+         pstmnt.execute();
+		return "Apointment Updated successfully...";
+		}
+	}
+	catch(SQLException e){
+		return "Error occured during Updating an Appointment\n" + e.getMessage();
+	}
+	
+}
+
 
 
 }
