@@ -244,6 +244,53 @@ public String UpdateAppointment(Date day,String time,int AppID) {
 	
 }
 
+public String DeleteAppointment(int AppID) {
+	
+	try(Connection con  = DBconnector.getConnection()){
+		
+		//query for get date 
+		String getdateQuery="select date  from appoinment where appoinment_id = ?";
+		PreparedStatement preparedstatement2 = con.prepareStatement(getdateQuery);
+			
+		preparedstatement2.setInt(1,AppID);
+		ResultSet newresultset = preparedstatement2.executeQuery();
+		
+		newresultset.next();
+		
+		  //assign to variable
+		  Date day = newresultset.getDate("date");
+		
+		
+		SimpleDateFormat  simpledateformat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date(System.currentTimeMillis());
+	
+		//check past dates
+		
+		if(day.compareTo(date)<0) {
+			
+			return "You cannot delete past dates as appointment dates only future dates";	
+			
+		
+	}
+		
+		else {
+			
+			 String Deletequery = "delete from appoinment where appoinment_id=?";
+				
+			 PreparedStatement pstmnt = con.prepareStatement(Deletequery);
+			 
+				pstmnt.setInt(1, AppID);
+				pstmnt.execute();
+				
+				return "Appoinment Deleted successfully";
+			
+		}
+	}catch(SQLException e){
+		
+		return "Error occurrd during Deleting\n" + e.getMessage();
+	}
+	
+}
 
 
 }
