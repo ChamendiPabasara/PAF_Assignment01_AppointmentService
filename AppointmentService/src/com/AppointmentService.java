@@ -41,5 +41,19 @@ public class AppointmentService {
 		return this.App1.getAppointmentByPatient(id);
 	}	
 	
+	@POST
+	@Path("/add")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String addAppointment(
+			@FormParam("date") Date day, 
+			@FormParam("time") String time,
+			@FormParam("patient_patient_id") int pid, 
+			@FormParam("doctor_doc_id") int did,
+			@FormParam("hospital_hosp_id") int hosID) 
+	{
+		String output = App1.addAppointment(day, time, pid, did, hosID);
+		return output;
+	}
 
 }
