@@ -55,5 +55,21 @@ public class AppointmentService {
 		String output = App1.addAppointment(day, time, pid, did, hosID);
 		return output;
 	}
+	
+	@PUT
+	@Path("/update/App1/{appoinment_id}") 
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String UpdateAppointment(
+			
+			@FormParam("date") Date day, 
+			@FormParam("time") String time,
+			@PathParam("appoinment_id") int AppID
+			) 
+	{
+		String output = App1.UpdateAppointment(day,time,AppID);
+
+		return output;
+	}
 
 }
